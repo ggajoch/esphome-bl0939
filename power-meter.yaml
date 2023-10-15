@@ -44,25 +44,97 @@ uart:
 
 sensor:
   - platform: bl0939
-    update_interval: 30s
+    update_interval: 10s
     voltage:
-      name: 'BL0939 Voltage'
+      name: 'BL0939 Voltage 1'
     current_1:
-      name: 'BL0939 Current 1'
+      name: 'BL0939 Current 1a'
     current_2:
-      name: 'BL0939 Current 2'
+      name: 'BL0939 Current 1b'
     active_power_1:
-      name: 'BL0939 Active Power 1'
+      name: 'BL0939 Active Power 1a'
     active_power_2:
-      name: 'BL0939 Active Power 2'
+      name: 'BL0939 Active Power 1b'
     energy_1:
-      name: 'BL0939 Energy 1'
+      name: 'BL0939 Energy 1a'
     energy_2:
-      name: 'BL0939 Energy 2'
+      name: 'BL0939 Energy 1b'
     energy_total:
-      name: 'BL0939 Energy Total'
+      name: 'BL0939 Energy Total 1'
     address: 0
-    current_reference: 266013.0
-    voltage_reference: 17158.9
-    power_reference: 713.105
-    energy_reference: 6120.6267
+    current_reference: 438921.675 # 324004*(3.3*1000)/2000/1.218
+    voltage_reference: 17483.267 # 79931 * 0.97 * 1000 / (1.218 * (3640 + 0.97))
+    power_reference: 1198.864 # current_reference * voltage_reference * 2023 / 12948981862
+    energy_reference: 10289.932 # 3.6e6/(1638.4 * 256) * power_reference
+
+  - platform: bl0939
+    update_interval: 10s
+    voltage:
+      name: 'BL0939 Voltage 2'
+    current_1:
+      name: 'BL0939 Current 2a'
+    current_2:
+      name: 'BL0939 Current 2b'
+    active_power_1:
+      name: 'BL0939 Active Power 2a'
+    active_power_2:
+      name: 'BL0939 Active Power 2b'
+    energy_1:
+      name: 'BL0939 Energy 2a'
+    energy_2:
+      name: 'BL0939 Energy 2b'
+    energy_total:
+      name: 'BL0939 Energy Total 2'
+    address: 3
+    current_reference: 438921.675 # 324004*(3.3*1000)/2000/1.218
+    voltage_reference: 17483.267 # 79931 * 0.97 * 1000 / (1.218 * (3640 + 0.97))
+    power_reference: 1198.864 # current_reference * voltage_reference * 2023 / 12948981862
+    energy_reference: 10289.932 # 3.6e6/(1638.4 * 256) * power_reference
+
+  - platform: bl0939
+    update_interval: 10s
+    voltage:
+      name: 'BL0939 Voltage 3'
+    current_1:
+      name: 'BL0939 Current 3a'
+    current_2:
+      name: 'BL0939 Current 3b'
+    active_power_1:
+      name: 'BL0939 Active Power 3a'
+    active_power_2:
+      name: 'BL0939 Active Power 3b'
+    energy_1:
+      name: 'BL0939 Energy 3a'
+    energy_2:
+      name: 'BL0939 Energy 3b'
+    energy_total:
+      name: 'BL0939 Energy Total 3'
+    address: 12
+    current_reference: 438921.675 # 324004*(3.3*1000)/2000/1.218
+    voltage_reference: 17483.267 # 79931 * 0.97 * 1000 / (1.218 * (3640 + 0.97))
+    power_reference: 1198.864 # current_reference * voltage_reference * 2023 / 12948981862
+    energy_reference: 10289.932 # 3.6e6/(1638.4 * 256) * power_reference
+
+  - platform: bl0939
+    update_interval: 10s
+    voltage:
+      name: 'BL0939 Voltage 4'
+    current_1:
+      name: 'BL0939 Current 4a'
+    current_2:
+      name: 'BL0939 Current 4b'
+    active_power_1:
+      name: 'BL0939 Active Power 4a'
+    active_power_2:
+      name: 'BL0939 Active Power 4b'
+    energy_1:
+      name: 'BL0939 Energy 4a'
+    energy_2:
+      name: 'BL0939 Energy 4b'
+    energy_total:
+      name: 'BL0939 Energy Total 4'
+    address: 15
+    current_reference: 438921.675 # 324004*(3.3*1000)/2000/1.218
+    voltage_reference: 17483.267 # 79931 * 0.97 * 1000 / (1.218 * (3640 + 0.97))
+    power_reference: 1198.864 # current_reference * voltage_reference * 2023 / 12948981862
+    energy_reference: 10289.932 # 3.6e6/(1638.4 * 256) * power_reference
