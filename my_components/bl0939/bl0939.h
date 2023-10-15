@@ -67,6 +67,7 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   void set_energy_sensor_1(sensor::Sensor *energy_sensor_1) { energy_sensor_1_ = energy_sensor_1; }
   void set_energy_sensor_2(sensor::Sensor *energy_sensor_2) { energy_sensor_2_ = energy_sensor_2; }
   void set_energy_sensor_sum(sensor::Sensor *energy_sensor_sum) { energy_sensor_sum_ = energy_sensor_sum; }
+  void set_address(uint8_t address) { address_ = address; }
 
   void loop() override;
 
@@ -85,6 +86,7 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *energy_sensor_1_{nullptr};
   sensor::Sensor *energy_sensor_2_{nullptr};
   sensor::Sensor *energy_sensor_sum_{nullptr};
+  uint8_t address_{0};
 
   // Divide by this to turn into Watt
   float power_reference_ = BL0939_PREF;
@@ -99,9 +101,13 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
 
   static int32_t to_int32_t(sbe24_t input);
 
-  static bool validate_checksum(const DataPacket *data);
+  bool validate_checksum(const DataPacket *data);
 
   void received_package_(const DataPacket *data) const;
+
+  uint8_t write_command();
+
+  uint8_t read_command();
 };
 }  // namespace bl0939
 }  // namespace esphome

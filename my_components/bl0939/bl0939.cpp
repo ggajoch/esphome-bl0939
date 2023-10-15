@@ -8,11 +8,11 @@ static const char *const TAG = "bl0939";
 
 // https://www.belling.com.cn/media/file_object/bel_product/BL0939/datasheet/BL0939_V1.2_cn.pdf
 // (unfortunately chinese, but the protocol can be understood with some translation tool)
-static const uint8_t BL0939_READ_COMMAND = 0x55;  // 0x5{A4,A3,A2,A1}
+static const uint8_t BL0939_READ_COMMAND = 0x50;  // 0x5{A4,A3,A2,A1}
 static const uint8_t BL0939_FULL_PACKET = 0xAA;
 static const uint8_t BL0939_PACKET_HEADER = 0x55;
 
-static const uint8_t BL0939_WRITE_COMMAND = 0xA5;  // 0xA{A4,A3,A2,A1}
+static const uint8_t BL0939_WRITE_COMMAND = 0xA0;  // 0xA{A4,A3,A2,A1}
 static const uint8_t BL0939_REG_IA_FAST_RMS_CTRL = 0x10;
 static const uint8_t BL0939_REG_IB_FAST_RMS_CTRL = 0x1E;
 static const uint8_t BL0939_REG_MODE = 0x18;
@@ -20,19 +20,13 @@ static const uint8_t BL0939_REG_SOFT_RESET = 0x19;
 static const uint8_t BL0939_REG_USR_WRPROT = 0x1A;
 static const uint8_t BL0939_REG_TPS_CTRL = 0x1B;
 
-const uint8_t BL0939_INIT[6][6] = {
-    // Reset to default
-    {BL0939_WRITE_COMMAND, BL0939_REG_SOFT_RESET, 0x5A, 0x5A, 0x5A, 0x33},
-    // Enable User Operation Write
-    {BL0939_WRITE_COMMAND, BL0939_REG_USR_WRPROT, 0x55, 0x00, 0x00, 0xEB},
-    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 50Hz, RMS_UPDATE_SEL 800mS
-    {BL0939_WRITE_COMMAND, BL0939_REG_MODE, 0x00, 0x10, 0x00, 0x32},
-    // 0x47FF = Over-current and leakage alarm on, Automatic temperature measurement, Interval 100mS
-    {BL0939_WRITE_COMMAND, BL0939_REG_TPS_CTRL, 0xFF, 0x47, 0x00, 0xF9},
-    // 0x181C = Half cycle, Fast RMS threshold 6172
-    {BL0939_WRITE_COMMAND, BL0939_REG_IA_FAST_RMS_CTRL, 0x1C, 0x18, 0x00, 0x16},
-    // 0x181C = Half cycle, Fast RMS threshold 6172
-    {BL0939_WRITE_COMMAND, BL0939_REG_IB_FAST_RMS_CTRL, 0x1C, 0x18, 0x00, 0x08}};
+uint8_t BL0939::write_command() {
+  return BL0939_WRITE_COMMAND | this->address_;
+}
+
+uint8_t BL0939::read_command() {
+  return BL0939_READ_COMMAND | this->address_;
+}
 
 void BL0939::loop() {
   DataPacket buffer;
@@ -51,7 +45,7 @@ void BL0939::loop() {
 }
 
 bool BL0939::validate_checksum(const DataPacket *data) {
-  uint8_t checksum = BL0939_READ_COMMAND;
+  uint8_t checksum = this->read_command();
   // Whole package but checksum
   for (uint32_t i = 0; i < sizeof(data->raw) - 1; i++) {
     checksum += data->raw[i];
@@ -65,11 +59,25 @@ bool BL0939::validate_checksum(const DataPacket *data) {
 
 void BL0939::update() {
   this->flush();
-  this->write_byte(BL0939_READ_COMMAND);
+  this->write_byte(this->read_command());
   this->write_byte(BL0939_FULL_PACKET);
 }
 
 void BL0939::setup() {
+  const uint8_t BL0939_INIT[6][6] = {
+    // Reset to default
+    {this->write_command(), BL0939_REG_SOFT_RESET, 0x5A, 0x5A, 0x5A, 0x33},
+    // Enable User Operation Write
+    {this->write_command(), BL0939_REG_USR_WRPROT, 0x55, 0x00, 0x00, 0xEB},
+    // 0x0100 = CF_UNABLE energy pulse, AC_FREQ_SEL 50Hz, RMS_UPDATE_SEL 800mS
+    {this->write_command(), BL0939_REG_MODE, 0x00, 0x10, 0x00, 0x32},
+    // 0x47FF = Over-current and leakage alarm on, Automatic temperature measurement, Interval 100mS
+    {this->write_command(), BL0939_REG_TPS_CTRL, 0xFF, 0x47, 0x00, 0xF9},
+    // 0x181C = Half cycle, Fast RMS threshold 6172
+    {this->write_command(), BL0939_REG_IA_FAST_RMS_CTRL, 0x1C, 0x18, 0x00, 0x16},
+    // 0x181C = Half cycle, Fast RMS threshold 6172
+    {this->write_command(), BL0939_REG_IB_FAST_RMS_CTRL, 0x1C, 0x18, 0x00, 0x08}};
+
   for (auto *i : BL0939_INIT) {
     this->write_array(i, 6);
     delay(1);
