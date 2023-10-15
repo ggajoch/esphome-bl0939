@@ -61,3 +61,8 @@ sensor:
       name: 'BL0939 Energy 2'
     energy_total:
       name: 'BL0939 Energy Total'
+    address: 0
+    current_reference: 266013.0
+    voltage_reference: 17158.9
+    power_reference: 713.105
+    energy_reference: 6120.6267

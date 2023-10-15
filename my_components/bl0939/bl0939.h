@@ -7,16 +7,6 @@
 namespace esphome {
 namespace bl0939 {
 
-// https://datasheet.lcsc.com/lcsc/2108071830_BL-Shanghai-Belling-BL0939_C2841044.pdf
-// (unfortunately chinese, but the formulas can be easily understood)
-// Sonoff Dual R3 V2 has the exact same resistor values for the current shunts (RL=1miliOhm)
-// and for the voltage divider (R1=0.51kOhm, R2=5*390kOhm)
-// as in the manufacturer's reference circuit, so the same formulas were used here (Vref=1.218V)
-static const float BL0939_IREF = 324004 * 1 / 1.218;
-static const float BL0939_UREF = 79931 * 0.51 * 1000 / (1.218 * (5 * 390 + 0.51));
-static const float BL0939_PREF = 4046 * 1 * 0.51 * 1000 / (1.218 * 1.218 * (5 * 390 + 0.51));
-static const float BL0939_EREF = 3.6e6 * 4046 * 1 * 0.51 * 1000 / (1638.4 * 256 * 1.218 * 1.218 * (5 * 390 + 0.51));
-
 struct ube24_t {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   uint8_t l;
   uint8_t m;
@@ -68,6 +58,10 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   void set_energy_sensor_2(sensor::Sensor *energy_sensor_2) { energy_sensor_2_ = energy_sensor_2; }
   void set_energy_sensor_sum(sensor::Sensor *energy_sensor_sum) { energy_sensor_sum_ = energy_sensor_sum; }
   void set_address(uint8_t address) { address_ = address; }
+  void set_current_reference(float current_reference) { current_reference_ = current_reference; }
+  void set_voltage_reference(float voltage_reference) { voltage_reference_ = voltage_reference; }
+  void set_power_reference(float power_reference) { power_reference_ = power_reference; }
+  void set_energy_reference(float energy_reference) { energy_reference_ = energy_reference; }
 
   void loop() override;
 
@@ -88,14 +82,14 @@ class BL0939 : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *energy_sensor_sum_{nullptr};
   uint8_t address_{0};
 
-  // Divide by this to turn into Watt
-  float power_reference_ = BL0939_PREF;
-  // Divide by this to turn into Volt
-  float voltage_reference_ = BL0939_UREF;
   // Divide by this to turn into Ampere
-  float current_reference_ = BL0939_IREF;
+  float current_reference_{0.0f};
+  // Divide by this to turn into Volt
+  float voltage_reference_{0.0f};
+  // Divide by this to turn into Watt
+  float power_reference_{0.0f};
   // Divide by this to turn into kWh
-  float energy_reference_ = BL0939_EREF;
+  float energy_reference_{0.0f};
 
   static uint32_t to_uint32_t(ube24_t input);
 
